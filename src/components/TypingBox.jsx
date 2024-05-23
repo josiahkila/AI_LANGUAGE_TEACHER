@@ -33,7 +33,7 @@ export const TypingBox = () => {
         <div className="gap-3 flex">
           <input
             className="focus:outline focus:outline-white/80 flex-grow bg-slate-800/60 p-2 px-4 rounded-full text-white placeholder:text-white/50 shadow-inner shadow-slate-900/60"
-            placeholder="Have you ever been to Japan?"
+            placeholder="Ask me a question"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={(e) => {
