@@ -10,19 +10,21 @@ export const MessagesList = () => {
   const container = useRef();
 
   useEffect(() => {
+    // Auto-scroll to the bottom of the message list whenever messages update
     if (container.current) {
       container.current.scrollTo({
         top: container.current.scrollHeight,
         behavior: "smooth",
       });
     }
-  }, [messages.length]);
+  }, [messages]);
 
+  // Function to render message text with conditional display based on 'english' state
   const renderMessageText = (text) => (
     <>
       {english && (
         <p className="text-4xl inline-block px-2 rounded-sm font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300/90 to-white/90">
-          {text}
+          {text || "No text available"}
         </p>
       )}
     </>
@@ -47,13 +49,13 @@ export const MessagesList = () => {
               {renderMessageText(message.text)}
             </div>
             {currentMessage === message ? (
-              <button className="text-white/65" onClick={() => playMessage(null)}>
+              <button className="text-white/65" onClick={() => playMessage(null)} aria-label="Stop playing">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h12M6 12h12m-12 6h12" />
                 </svg>
               </button>
             ) : (
-              <button className="text-white/65" onClick={() => playMessage(message)}>
+              <button className="text-white/65" onClick={() => playMessage(message)} aria-label="Play message">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.25 9.75l-6 4.5 6 4.5V9.75z" />
                 </svg>
