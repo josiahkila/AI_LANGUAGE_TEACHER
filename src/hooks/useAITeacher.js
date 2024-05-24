@@ -83,21 +83,42 @@ playMessage: async (message) => {
       const audioUrl = URL.createObjectURL(audio);
       const audioPlayer = new Audio(audioUrl);
 
-      // Corrected variable name for fetching viseme data from response headers
-      const visemeData = await audioRes.headers.get('Visemes'); // Assuming viseme data is sent in the response headers
-      const visemes = JSON.parse(visemeData || "[]"); // Safely parse the viseme data
+      // Assuming viseme data is provided in response headers; ensure proper handling of absence
+      const visemesHeader = await audioRes.headers.get("visemes");
+      const visemes = visemesHeader ? JSON.parse(visemesHeader) : [];
 
-      audioPlayer.onended = () => set(() => ({ currentMessage: null }));
+      message.audioPlayer = audioPlayer;
+      message.visemes = visemes;
+
+      message.audioPlayer.onended = () => {
+        set(() => ({
+          currentMessage: null,
+        }));
+      };
       set(() => ({
-        messages: get().messages.map(m => m.id === message.id ? { ...m, audioPlayer, visemes } : m),
         loading: false,
+        messages: get().messages.map((m) => {
+          if (m.id === message.id) {
+            return {...m, audioPlayer: message.audioPlayer, visemes: message.visemes};
+          }
+          return m;
+        }),
       }));
 
-      audioPlayer.play();
+      message.audioPlayer.currentTime = 0;
+      message.audioPlayer.play();
     } catch (error) {
       console.error("Error in playMessage:", error);
       set(() => ({ loading: false }));
     }
   }
+},
+stopMessage: (message) => {
+  if (message.audioPlayer) {
+    message.audioPlayer.pause();
+  }
+  set(() => ({
+    currentMessage: null,
+  }));
 },
 }));
