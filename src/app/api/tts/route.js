@@ -11,7 +11,7 @@ export async function GET(req) {
   );
 
   // https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support?tabs=tts
-  const teacher = req.nextUrl.searchParams.get("teacher") || "Brian";
+  const teacher = req.nextUrl.searchParams.get("teacher") || "Emma";
   speechConfig.speechSynthesisVoiceName = `en-US-${teacher}Neural`;
 
   const speechSynthesizer = new sdk.SpeechSynthesizer(speechConfig);

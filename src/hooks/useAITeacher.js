@@ -71,28 +71,33 @@ export const useAITeacher = create((set, get) => ({
         set(() => ({ loading: false }));  // Ensure loading state is cleared on error
     }
 },
-  playMessage: async (message) => {
-    if (!message.audioPlayer) {
-      try {
-        const audioRes = await fetch(`/api/tts?teacher=${get().teacher}&text=${encodeURIComponent(message.answer)}`, {
-          headers: { 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}` }  // Assuming API key is needed for TTS as well
-        });
-        if (!audioRes.ok) throw new Error(`TTS API call failed with status ${audioRes.status}`);
-        const audio = await audioRes.blob();
-        const audioUrl = URL.createObjectURL(audio);
-        const audioPlayer = new Audio(audioUrl);
+playMessage: async (message) => {
+  if (!message.audioPlayer) {
+    try {
+      const audioRes = await fetch(`/api/tts?teacher=${get().teacher}&text=${encodeURIComponent(message.answer)}`, {
+        headers: { 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}` }  // Assuming API key is needed for TTS as well
+      });
+      if (!audioRes.ok) throw new Error(`TTS API call failed with status ${audioRes.status}`);
 
-        audioPlayer.onended = () => set(() => ({ currentMessage: null }));
-        set(() => ({
-          messages: get().messages.map(m => m.id === message.id ? { ...m, audioPlayer } : m),
-          loading: false,
-        }));
+      const audio = await audioRes.blob();
+      const audioUrl = URL.createObjectURL(audio);
+      const audioPlayer = new Audio(audioUrl);
 
-        audioPlayer.play();
-      } catch (error) {
-        console.error("Error in playMessage:", error);
-        set(() => ({ loading: false }));
-      }
+      // Corrected variable name for fetching viseme data from response headers
+      const visemeData = await audioRes.headers.get('Visemes'); // Assuming viseme data is sent in the response headers
+      const visemes = JSON.parse(visemeData || "[]"); // Safely parse the viseme data
+
+      audioPlayer.onended = () => set(() => ({ currentMessage: null }));
+      set(() => ({
+        messages: get().messages.map(m => m.id === message.id ? { ...m, audioPlayer, visemes } : m),
+        loading: false,
+      }));
+
+      audioPlayer.play();
+    } catch (error) {
+      console.error("Error in playMessage:", error);
+      set(() => ({ loading: false }));
     }
-  },
+  }
+},
 }));
