@@ -16,7 +16,7 @@ export async function GET(req) {
   // WARNING: Do not expose your keys
   // WARNING: If you host publicly your project, add an authentication layer to limit the consumption of ChatGPT resources
 
-  const question = req.nextUrl.searchParams.get("question") || "What is your favorite movie?";
+  const question = req.nextUrl.searchParams.get("question");
   const responseExamples = generalExample.responses.map(response => response.text).join(" or ");
 
   const chatCompletion = await openai.chat.completions.create({
@@ -31,7 +31,7 @@ export async function GET(req) {
       },
       {
         role: "system",
-        content: `You can answer like: "${responseExamples}". Remember, all responses should be formatted in json style for consistency.`
+        content: `You can answer like: "${responseExamples}". Remember, all responses should be formatted in json style for consistency. For example: {"response": "You're response"}`
       }
     ],
     model: "gpt-3.5-turbo",

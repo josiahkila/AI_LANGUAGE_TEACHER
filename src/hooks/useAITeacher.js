@@ -1,6 +1,6 @@
 const { create } = require("zustand");
 
-export const teachers = ["Nanami", "Naoki"];
+export const teachers = ["Emma", "Brian"];
 
 export const useAITeacher = create((set, get) => ({
   messages: [],
@@ -57,7 +57,7 @@ export const useAITeacher = create((set, get) => ({
         const apiResponse = data.message || data.response;
 
         // Construct the answer using the appropriate field from the response
-        message.answer = `Q: ${question}\nA: ${apiResponse}`;
+        message.answer = `${apiResponse}`;
         message.speech = speech;
 
         set(state => ({
