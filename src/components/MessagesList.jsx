@@ -4,13 +4,19 @@ import { useEffect, useRef } from "react";
 export const MessagesList = () => {
   const messages = useAITeacher((state) => state.messages);
   const playMessage = useAITeacher((state) => state.playMessage);
-  const { currentMessage } = useAITeacher();
+  const currentMessage = useAITeacher((state) => state.currentNoMessage); // Correctly retrieve the current message.
   const english = useAITeacher((state) => state.english);
 
-  const container = useRef();
+  const container = useRef(null);
 
   useEffect(() => {
-    // Auto-scroll to the bottom of the message list whenever messages update
+    console.log('Current Messages:', messages);
+    messages.forEach((message, index) => {
+      console.log(`Message ${index}:`, message);
+      const displayText = message.text || message.answer || 'No text available'; // Fallback to 'answer' if 'text' is not present.
+      console.log(`Message ${index} Text: ${displayText}`);
+    });
+
     if (container.current) {
       container.current.scrollTo({
         top: container.current.scrollHeight,
@@ -19,12 +25,11 @@ export const MessagesList = () => {
     }
   }, [messages]);
 
-  // Function to render message text with conditional display based on 'english' state
-  const renderMessageText = (text) => (
+  const renderMessageText = (message) => (
     <>
       {english && (
         <p className="text-4xl inline-block px-2 rounded-sm font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300/90 to-white/90">
-          {text || "No text available"}
+          {message.text || message.answer || "No text available"}
         </p>
       )}
     </>
@@ -46,7 +51,7 @@ export const MessagesList = () => {
               <span className="text-white/90 text-2xl font-bold uppercase px-3 py-1 rounded-full bg-indigo-600">
                 {message.speech || "Conversation"}
               </span>
-              {renderMessageText(message.text)}
+              {renderMessageText(message)}
             </div>
             {currentMessage === message ? (
               <button className="text-white/65" onClick={() => playMessage(null)} aria-label="Stop playing">
