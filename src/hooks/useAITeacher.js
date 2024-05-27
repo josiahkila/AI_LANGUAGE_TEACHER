@@ -28,17 +28,17 @@ export const useAITeacher = create((set, get) => ({
   setSpeech: (speech) => {
     set(() => ({ speech }));
   },
-  askAI: async (question) => {
-    if (!question) return;  // Exit if no question is provided
+  askAI: async (response) => {
+    if (!response) return;  // Exit if no question is provided
     const message = {
-        question,
+        response,
         id: get().messages.length,
     };
     set(() => ({ loading: true }));  // Indicate loading state
 
     const speech = get().speech;
     try {
-        const res = await fetch(`/api/ai?question=${question}&speech=${speech}`, {
+        const res = await fetch(`/api/ai?response=${response}&speech=${speech}`, {
             headers: { 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}` }  // Assuming you're using authorization
         });
         const data = await res.json();  // Parse the JSON response

@@ -5,10 +5,9 @@ const openai = new OpenAI({
 });
 
 const generalExample = {
-  prompt: "What is your favorite movie?",
+  prompt: "Mi película favorita es El Laberinto del Fauno de Guillermo del Toro. Ambientada en la España de posguerra, sigue a Ofelia, una niña que descubre un mundo fantástico lleno de criaturas extraordinarias. A través de pruebas místicas, Ofelia busca probar su valía en este entorno lleno de simbolismo y desafíos. La película mezcla magistralmente la realidad con la fantasía, aunque algunos encuentran que ciertos personajes secundarios están menos desarrollados",
   responses: [
-    { text: "My favorite movie is Inception because of its complex narrative structure." },
-    { text: "I love The Matrix for its action scenes and deep philosophical questions." }
+    { text: "It looks like you were trying to say that 'El Laberinto del Fauno' is your favorite movie, set in post-war Spain and follows Ofelia, a young girl discovering a fantastic world. The way you could say it in Spanish to make it clearer and more engaging would be 'Mi película favorita es 'El Laberinto del Fauno' de Guillermo del Toro. Está ambientada en la España de la posguerra de los años cuarenta, donde Ofelia, una joven, encuentra un mundo fantástico lleno de criaturas asombrosas. Ofelia se enfrenta a desafíos místicos para demostrar su valía en un entorno rico en simbolismo.'" }
   ]
 };
 
@@ -16,22 +15,22 @@ export async function GET(req) {
   // WARNING: Do not expose your keys
   // WARNING: If you host publicly your project, add an authentication layer to limit the consumption of ChatGPT resources
 
-  const question = req.nextUrl.searchParams.get("question");
+  const response = req.nextUrl.searchParams.get("response");
   const responseExamples = generalExample.responses.map(response => response.text).join(" or ");
 
   const chatCompletion = await openai.chat.completions.create({
     messages: [
       {
         role: "system",
-        content: `You are an English conversational bot. Engage the user by answering questions and follow up with your own questions to keep the conversation going. This conversation is formatted as a json object.`,
+        content: `You are a Spanish correction bot. Engage the user by asking questions in spanish. This conversation is formatted as a json object.`,
       },
       {
         role: "user",
-        content: question,
+        content: response,
       },
       {
         role: "system",
-        content: `You can answer like: "${responseExamples}". Remember, all responses should be formatted in json style for consistency. For example: {"response": "You're response"}`
+        content: `Give the response a score from 1 to 10. You can answer like: "${responseExamples}". Remember, all responses should be formatted in json style for consistency. For example: {"response": "You're response"}`
       }
     ],
     model: "gpt-3.5-turbo",
